@@ -9,11 +9,13 @@ Built with:
 - DS18B20 for temperature
 - TFA 30.3512 tipping bucket rain gauge for rain
 - A solar-powered USB batter pack for power
-- [ThinkSpeak](https://thingspeak.com) for storing/visualizing data
+- [ThingSpeak](https://thingspeak.com) for storing/visualizing data
+
+## Schematic
 
 ![Arduino schematic](schematic_bb.png?raw=true)
 
-### TODO:
+## TODO:
 
 - [x] Get DHT11 working
 - [x] Get DS18B20 working
@@ -24,6 +26,6 @@ Built with:
 - [ ] Make sure the battery provides enough power
 - [ ] Build the box
 
-### Notes along the way
+## Notes along the way
 
 - The firmware of the WiFi shield needs to be updated if you want it to connect to any server when using version >1.0.2 of the Arduino IDE. Otherwise the shield will connect to the WiFi network, but all calls to `client.connect()` fail.
