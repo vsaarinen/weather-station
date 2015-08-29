@@ -11,6 +11,8 @@ Built with:
 - A solar-powered USB batter pack for power
 - [ThinkSpeak](https://thingspeak.com) for storing/visualizing data
 
+![Arduino schematic](schematic_bb.png?raw=true)
+
 ### TODO:
 
 - [x] Get DHT11 working
