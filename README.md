@@ -16,9 +16,10 @@ Built with:
 - [x] Get DHT11 working
 - [x] Get DS18B20 working
 - [ ] Get BMP085 working
+- [ ] Get rain gauge working
 - [x] Get WiFi working
 - [ ] Get GPRS working
-- [ ] Make sure batter provides enough power
+- [ ] Make sure the battery provides enough power
 - [ ] Build the box
 
 ### Notes along the way
