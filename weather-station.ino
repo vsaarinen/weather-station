@@ -33,7 +33,7 @@ char pass[] = "YOUR_NETWORK_PASSWORD";   // your network password
 String thingSpeakWriteApiKey = "YOUR_API_KEY";
 
 void wifiConnect(){
-  Serial.println("... Attempting to connect to WiFi network...");
+  Serial.println("... Connecting to WiFi network...");
   status = WiFi.begin(ssid, pass);
 
   while (status != WL_CONNECTED) {
@@ -71,9 +71,13 @@ void setup()
   Serial.print("DHT11 LIBRARY VERSION: ");
   Serial.println(DHT11LIB_VERSION);
 
+  Serial.print("DALLAS TEMP LIBRARY VERSION: ");
+  Serial.println(DALLASTEMPLIBVERSION);
+
   Serial.println();
 
   temperatureSensor.begin();
+  temperatureSensor.setResolution(TEMP_11_BIT); // 12 bits takes ~750mx, 11 bits ~375ms
 }
 
 int humidity;
