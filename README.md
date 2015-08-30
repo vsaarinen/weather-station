@@ -1,14 +1,16 @@
 # An Arduino weather station
 
+A solar-powered station that sends weather data (temperature, humidity, pressure, rainfall) via GPRS.
+
 Built with:
 
-- Arduino Uno
-- WiFi shield or Geeetech GPRS 2.0 shield
-- DHT11 for humidity
-- BMP085 for barometric pressure
-- DS18B20 for temperature
+- [Arduino Uno](https://www.arduino.cc/en/Main/arduinoBoardUno)
+- [WiFi shield](https://www.arduino.cc/en/Main/ArduinoWiFiShield) or [Geeetech GPRS 2.0 shield](http://www.dx.com/p/geeetech-updated-gprs-gsm-sim900-shield-v2-0-compatible-with-arduino-green-367958)
+- [DHT11](http://www.dx.com/p/temperature-humidity-sensor-dht11-module-for-arduino-deep-blue-works-with-official-arduino-board-288612) for humidity
+- [BMP085](http://www.dx.com/p/bmp085-barometric-pressure-height-sensor-module-for-arduino-blue-148612) for barometric pressure
+- [DS18B20](http://www.dx.com/p/ds18b20-waterproof-digital-temperature-probe-black-silver-204290) for temperature
 - TFA 30.3512 tipping bucket rain gauge for rain
-- A solar-powered USB batter pack for power
+- A [solar-powered USB battery pack](http://www.dx.com/p/3000mah-solar-powered-dual-usb-external-battery-power-bank-w-led-indicator-flashlight-black-279135) for power
 - [ThingSpeak](https://thingspeak.com) for storing/visualizing data
 
 ## Schematic
