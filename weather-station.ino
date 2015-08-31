@@ -46,16 +46,16 @@ char pass[] = "YOUR_NETWORK_PASSWORD";   // your network password
 String thingSpeakWriteApiKey = "YOUR_API_KEY";
 
 void wifiConnect(){
-  Serial.println("... Connecting to WiFi network...");
+  Serial.print("... Connecting to WiFi...");
   status = WiFi.begin(ssid, pass);
 
   while (status != WL_CONNECTED) {
     delay(10000);
-    Serial.println("... Not successful. Retrying...");
+    Serial.println("Not successful. Retrying...");
     status = WiFi.begin(ssid, pass);
   }
 
-  Serial.println("... Joined.");
+  Serial.println("Joined.");
 }
 
 void printWifiStatus() {
@@ -64,12 +64,12 @@ void printWifiStatus() {
 
   // print your WiFi shield's IP address:
   IPAddress ip = WiFi.localIP();
-  Serial.print("IP Address: ");
+  Serial.print("IP: ");
   Serial.println(ip);
 
   // print the received signal strength:
   long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
+  Serial.print("Strength (RSSI):");
   Serial.print(rssi);
   Serial.println(" dBm");
 }
@@ -81,10 +81,9 @@ void setup()
   wifiConnect();
   printWifiStatus();
 
-  Serial.print("DHT11 LIBRARY VERSION: ");
+  Serial.print("DHT11 LIB VER: ");
   Serial.println(DHT11LIB_VERSION);
-
-  Serial.print("DALLAS TEMP LIBRARY VERSION: ");
+  Serial.print("DALLAS TEMP LIB VER: ");
   Serial.println(DALLASTEMPLIBVERSION);
 
   temperatureSensor.begin();
@@ -126,10 +125,6 @@ void loop()
 
   // Disconnect from ThingSpeak
   if (!client.connected() && lastConnected) {
-    if (DEBUG) {
-      Serial.println("...disconnected");
-      Serial.println();
-    }
     client.stop();
   }
 
