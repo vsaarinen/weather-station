@@ -32,7 +32,7 @@ dht11 DHT11;
 // ThingSpeak
 char thingSpeakServer[] = "api.thingspeak.com";
 const long updateThingSpeakInterval = 60 * 1000L;   // Time interval in milliseconds to update ThingSpeak
-long lastConnectionTime = 0;
+long lastConnectionTime = -updateThingSpeakInterval; // update straight away
 boolean lastConnected = false;
 int failedCounter = 0;
 
