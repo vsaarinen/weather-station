@@ -45,34 +45,6 @@ char ssid[] = "YOUR_SSID";          // your network SSID (name)
 char pass[] = "YOUR_NETWORK_PASSWORD";   // your network password
 String thingSpeakWriteApiKey = "YOUR_API_KEY";
 
-void wifiConnect(){
-  Serial.print("... Connecting to WiFi...");
-  status = WiFi.begin(ssid, pass);
-
-  while (status != WL_CONNECTED) {
-    delay(10000);
-    Serial.println("Not successful. Retrying...");
-    status = WiFi.begin(ssid, pass);
-  }
-
-  Serial.println("Joined.");
-}
-
-void printWifiStatus() {
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
-
-  // print your WiFi shield's IP address:
-  IPAddress ip = WiFi.localIP();
-  Serial.print("IP: ");
-  Serial.println(ip);
-
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("Strength (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
-}
 
 void setup()
 {
@@ -147,6 +119,35 @@ void loop()
   }
 
   delay(loopDelay);
+}
+
+void wifiConnect(){
+  Serial.print("... Connecting to WiFi...");
+  status = WiFi.begin(ssid, pass);
+
+  while (status != WL_CONNECTED) {
+    delay(10000);
+    Serial.println("Not successful. Retrying...");
+    status = WiFi.begin(ssid, pass);
+  }
+
+  Serial.println("Joined.");
+}
+
+void printWifiStatus() {
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+
+  // print your WiFi shield's IP address:
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP: ");
+  Serial.println(ip);
+
+  // print the received signal strength:
+  long rssi = WiFi.RSSI();
+  Serial.print("Strength (RSSI):");
+  Serial.print(rssi);
+  Serial.println(" dBm");
 }
 
 void updateThingSpeak(String tsData)
