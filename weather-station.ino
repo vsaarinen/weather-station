@@ -45,6 +45,13 @@ char ssid[] = "YOUR_SSID";          // your network SSID (name)
 char pass[] = "YOUR_NETWORK_PASSWORD";   // your network password
 String thingSpeakWriteApiKey = "YOUR_API_KEY";
 
+// Weather data
+int humidity, dhtStatus;
+float temperature, bmpTemperature;
+long pressure;
+#define RAIN_FACTOR 0.2794 // each click is 0,2794 mm of rain
+volatile int rainClicks = 0; 
+volatile long lastRainClick;
 
 void setup()
 {
@@ -58,6 +65,8 @@ void setup()
   Serial.print("DALLAS TEMP LIB VER: ");
   Serial.println(DALLASTEMPLIBVERSION);
 
+  attachInterrupt(1, increaseRainCount, RISING); // Interrupt #1 is pin D3
+
   temperatureSensor.begin();
   temperatureSensor.setResolution(TEMP_11_BIT); // 12 bits takes ~750mx, 11 bits ~375ms
 
@@ -70,10 +79,6 @@ void setup()
     Serial.println("Setup() complete");
   }
 }
-
-int humidity, dhtStatus;
-float temperature, bmpTemperature;
-long pressure;
 
 void loop()
 {
@@ -103,7 +108,8 @@ void loop()
     }
 
     if (millis() - lastConnectionTime > updateThingSpeakInterval) { // time to update
-      updateThingSpeak("1="+String(temperature)+"&2="+String(humidity)+"&3="+String(pressure));
+      updateThingSpeak("1="+String(temperature)+"&2="+String(humidity)+"&3="+String(pressure)+"&4="+String(rainClicks*RAIN_FACTOR));
+      rainClicks = 0;
     }
   }
 
@@ -148,6 +154,18 @@ void printWifiStatus() {
   Serial.print("Strength (RSSI):");
   Serial.print(rssi);
   Serial.println(" dBm");
+}
+
+void increaseRainCount() {
+  long thisTime = micros() - lastRainClick;
+  lastRainClick = micros();
+  if (thisTime > 1000) { // debounce of 1ms
+    rainClicks++;
+    if (DEBUG) {
+      Serial.print("Rain! ");
+      Serial.println(rainClicks);
+    }
+  }
 }
 
 void updateThingSpeak(String tsData)
