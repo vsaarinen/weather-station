@@ -125,23 +125,26 @@ void loop()
     printSensorData();
   }
 
-  // Disconnect from ThingSpeak
-  if (!client.connected() && lastConnected) {
-    client.stop();
-  }
+  if (!client.connected()) {
+    if (lastConnected) {
+      client.stop(); // Disconnect from ThingSpeak
+    }
 
-  // Update ThingSpeak
-  if(!client.connected() && (millis() - lastConnectionTime > updateThingSpeakInterval))
-  {
-    updateThingSpeak("1="+String(temperature)+"&2="+String(humidity));
-  }
-
-  // Check if Arduino WiFi needs to be restarted
-  if (failedCounter > 3 ) {
-    wifiConnect();
+    if (millis() - lastConnectionTime > updateThingSpeakInterval) { // time to update
+      updateThingSpeak("1="+String(temperature)+"&2="+String(humidity)+"&3="+String(pressure));
+    }
   }
 
   lastConnected = client.connected();
+
+  // Check if Arduino WiFi needs to be restarted
+  if (failedCounter > 3 ) {
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("... Disconnecting wifi.");
+      WiFi.disconnect();
+      wifiConnect();
+    }
+  }
 
   delay(loopDelay);
 }
@@ -157,8 +160,9 @@ void updateThingSpeak(String tsData)
     client.print("POST /update HTTP/1.1\n");
     client.print("Host: api.thingspeak.com\n");
     client.print("Connection: close\n");
-    client.print("X-THINGSPEAKAPIKEY: "+thingSpeakWriteApiKey+"\n");
-    client.print("Content-Type: application/x-www-form-urlencoded\n");
+    client.print("X-THINGSPEAKAPIKEY: ");
+    client.print(thingSpeakWriteApiKey);
+    client.print("\nContent-Type: application/x-www-form-urlencoded\n");
     client.print("Content-Length: ");
     client.print(tsData.length());
     client.print("\n\n");
