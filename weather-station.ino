@@ -90,7 +90,7 @@ void setup()
   temperatureSensor.setResolution(TEMP_11_BIT); // 12 bits takes ~750mx, 11 bits ~375ms
 
   if (!bmp.begin()) {
-    Serial.println("Could not find BMP085 sensor!");
+    Serial.println("Can't find BMP085 sensor!");
     bmpAvailable = false;
   }
 
@@ -99,7 +99,7 @@ void setup()
   }
 }
 
-int humidity;
+int humidity, dhtStatus;
 float temperature, bmpTemperature;
 long pressure;
 
@@ -110,17 +110,19 @@ void loop()
   }
 
   // Read sensor data
-  int chk = DHT11.read(DHT11PIN);
+  dhtStatus = DHT11.read(DHT11PIN);
   humidity = DHT11.humidity;
+  
   temperatureSensor.requestTemperatures();
   temperature = temperatureSensor.getTempCByIndex(0);
+  
   if (bmpAvailable) {
     bmpTemperature = bmp.readTemperature();
     pressure = bmp.readPressure();
   }
 
   if (DEBUG) {
-    printSensorData(chk);
+    printSensorData();
   }
 
   // Disconnect from ThingSpeak
@@ -205,7 +207,8 @@ void printIncomingData() {
             currentLine += c;
           }
 
-          Serial.println("line: " + currentLine);
+          Serial.println("BODY:");
+          Serial.println(currentLine);
 
           currentLine = "";
           client.flush();
@@ -221,7 +224,7 @@ void printIncomingData() {
   }
 }
 
-void printSensorData(int dhtStatus) {
+void printSensorData() {
   Serial.print("DHT11 sensor: ");
   switch (dhtStatus)
   {
@@ -240,38 +243,20 @@ void printSensorData(int dhtStatus) {
   }
   Serial.print("DHT11 Humidity (%): ");
   Serial.println(humidity);
-  Serial.print("DHT11 Temperature (°C): ");
+  Serial.print("DHT11 Temperature (C): ");
   Serial.println(DHT11.temperature);
-  
-  Serial.print("DS18B20 Temperature (°C): ");
+
+  Serial.print("DS18B20 Temperature (C): ");
   Serial.println(temperature);
 
   if (bmpAvailable) {
-    Serial.print("Temperature = ");
+    Serial.print("BMP085 Temperature (C): ");
     Serial.print(bmpTemperature);
     Serial.println(" *C");
-    
-    Serial.print("Pressure = ");
+
+    Serial.print("BMP085 Pressure (C): ");
     Serial.print(pressure);
     Serial.println(" Pa");
-    
-    // Calculate altitude assuming 'standard' barometric
-    // pressure of 1013.25 millibar = 101325 Pascal
-    Serial.print("Altitude = ");
-    Serial.print(bmp.readAltitude());
-    Serial.println(" m");
-
-    Serial.print("Pressure at sealevel (calculated) = ");
-    Serial.print(bmp.readSealevelPressure());
-    Serial.println(" Pa");
-
-    // you can get a more precise measurement of altitude
-    // if you know the current sea level pressure which will
-    // vary with weather and such. If it is 1015 millibars
-    // that is equal to 101500 Pascals.
-    Serial.print("Real altitude = ");
-    Serial.print(bmp.readAltitude(101500));
-    Serial.println(" m");
   }
 }
 
