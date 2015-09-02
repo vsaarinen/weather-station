@@ -68,7 +68,7 @@ void setup()
   attachInterrupt(1, increaseRainCount, RISING); // Interrupt #1 is pin D3
 
   temperatureSensor.begin();
-  temperatureSensor.setResolution(TEMP_11_BIT); // 12 bits takes ~750mx, 11 bits ~375ms
+  temperatureSensor.setResolution(TEMP_11_BIT); // 12 bits takes ~750ms, 11 bits ~375ms
 
   if (!bmp.begin()) {
     Serial.println("Can't find BMP085 sensor!");
@@ -89,10 +89,10 @@ void loop()
   // Read sensor data
   dhtStatus = DHT11.read(DHT11PIN);
   humidity = DHT11.humidity;
-  
+
   temperatureSensor.requestTemperatures();
   temperature = temperatureSensor.getTempCByIndex(0);
-  
+
   if (bmpAvailable) {
     bmpTemperature = bmp.readTemperature();
     pressure = bmp.readPressure();
@@ -129,12 +129,12 @@ void loop()
 
 void wifiConnect(){
   Serial.print("... Connecting to WiFi...");
-  status = WiFi.begin(ssid, pass);
+  int wifiStatus = WiFi.begin(ssid, pass);
 
-  while (status != WL_CONNECTED) {
+  while (wifiStatus != WL_CONNECTED) {
     delay(10000);
     Serial.println("Not successful. Retrying...");
-    status = WiFi.begin(ssid, pass);
+    wifiStatus = WiFi.begin(ssid, pass);
   }
 
   Serial.println("Joined.");
