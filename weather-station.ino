@@ -31,19 +31,17 @@ dht11 DHT11;
 
 // ThingSpeak
 char thingSpeakServer[] = "api.thingspeak.com";
-const long updateThingSpeakInterval = 60 * 1000L;   // Time interval in milliseconds to update ThingSpeak
+const long updateThingSpeakInterval = 5 * 60 * 1000L;   // Time interval in milliseconds to update ThingSpeak
 long lastConnectionTime = -updateThingSpeakInterval; // update straight away
-boolean lastConnected = false;
 int failedCounter = 0;
 
 // WiFi
-int status = WL_IDLE_STATUS;      // the Wifi radio's status
 WiFiClient client;
 
 // Sensitive data
-char ssid[] = "YOUR_SSID";          // your network SSID (name)
-char pass[] = "YOUR_NETWORK_PASSWORD";   // your network password
 String thingSpeakWriteApiKey = "YOUR_API_KEY";
+#define SSID_NETWORK "WIFINAME"
+#define SSID_PASS "WIFIPASS"
 
 // Weather data
 int humidity, dhtStatus;
@@ -82,10 +80,6 @@ void setup()
 
 void loop()
 {
-  if (DEBUG) {
-    printIncomingData();
-  }
-
   // Read sensor data
   dhtStatus = DHT11.read(DHT11PIN);
   humidity = DHT11.humidity;
@@ -103,24 +97,9 @@ void loop()
   }
 
   if (!client.connected()) {
-    if (lastConnected) {
-      client.stop(); // Disconnect from ThingSpeak
-    }
-
     if (millis() - lastConnectionTime > updateThingSpeakInterval) { // time to update
       updateThingSpeak("1="+String(temperature)+"&2="+String(humidity)+"&3="+String(pressure)+"&4="+String(rainClicks*RAIN_FACTOR));
       rainClicks = 0;
-    }
-  }
-
-  lastConnected = client.connected();
-
-  // Check if Arduino WiFi needs to be restarted
-  if (failedCounter > 3 ) {
-    if (WiFi.status() != WL_CONNECTED) {
-      Serial.println("... Disconnecting wifi.");
-      WiFi.disconnect();
-      wifiConnect();
     }
   }
 
@@ -128,13 +107,21 @@ void loop()
 }
 
 void wifiConnect(){
+  // check for the presence of the shield:
+  if (WiFi.status() == WL_NO_SHIELD) {
+    Serial.println("WiFi shield not present"); 
+    
+    while(true) // don't continue
+      ;
+  }
+  
   Serial.print("... Connecting to WiFi...");
-  int wifiStatus = WiFi.begin(ssid, pass);
+  int wifiStatus = WiFi.begin(SSID_NETWORK, SSID_PASS);
 
   while (wifiStatus != WL_CONNECTED) {
     delay(10000);
     Serial.println("Not successful. Retrying...");
-    wifiStatus = WiFi.begin(ssid, pass);
+    wifiStatus = WiFi.begin(SSID_NETWORK, SSID_PASS);
   }
 
   Serial.println("Joined.");
@@ -173,7 +160,7 @@ void updateThingSpeak(String tsData)
   if (client.connect(thingSpeakServer, 80))
   {
     if (DEBUG) {
-      Serial.println("... Connected, POSTing...");
+      Serial.println("... Connected, POSTing: " + tsData);
     }
 
     client.print("POST /update HTTP/1.1\n");
@@ -209,40 +196,20 @@ void updateThingSpeak(String tsData)
     Serial.println("... Connection to ThingSpeak Failed ("+String(failedCounter, DEC)+")");
     Serial.println();
   }
-}
 
+  while (client.connected()) {
+    client.flush();
+  }
 
-void printIncomingData() {
-  if (client.available()) {
-    char c;
-    String currentLine = "";
+  client.stop();
 
-    while (client.available()) {
-      c = client.read();
-
-      if (c == '\n') {
-        if (currentLine == "\r") {
-          currentLine = "";
-
-          // parse the HTTP body
-          while (client.available()) {
-            c = client.read();
-            currentLine += c;
-          }
-
-          Serial.println("BODY:");
-          Serial.println(currentLine);
-
-          currentLine = "";
-          client.flush();
-          break;
-        } else {
-          Serial.println(currentLine);
-          currentLine = "";
-        }
-      } else {
-        currentLine += c;
-      }
+  // Check if Arduino WiFi needs to be restarted
+  if (failedCounter > 4) {
+    if ((WiFi.status() != WL_CONNECTED) || (failedCounter > 14)) {
+      failedCounter = 0;
+      Serial.println("... Disconnecting wifi.");
+      WiFi.disconnect();
+      wifiConnect();
     }
   }
 }
@@ -277,7 +244,7 @@ void printSensorData() {
     Serial.print(bmpTemperature);
     Serial.println(" *C");
 
-    Serial.print("BMP085 Pressure (C): ");
+    Serial.print("BMP085 Pressure (Pa): ");
     Serial.print(pressure);
     Serial.println(" Pa");
   }
