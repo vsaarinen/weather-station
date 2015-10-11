@@ -5,6 +5,7 @@
 #include <DallasTemperature.h>
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
+#include <MemoryFree.h>
 
 #define DEBUG false
 const long loopDelay = 60 * 1000L; // in milliseconds
@@ -98,7 +99,7 @@ void loop()
 
   if (!client.connected()) {
     if (millis() - lastConnectionTime > updateThingSpeakInterval) { // time to update
-      updateThingSpeak("1="+String(temperature)+"&2="+String(humidity)+"&3="+String(pressure)+"&4="+String(rainClicks*RAIN_FACTOR));
+      updateThingSpeak("1="+String(temperature)+"&2="+String(humidity)+"&3="+String(pressure)+"&4="+String(rainClicks*RAIN_FACTOR)+"&5="+String(freeMemory()));
       rainClicks = 0;
     }
   }
@@ -185,7 +186,7 @@ void updateThingSpeak(String tsData)
     {
       failedCounter++;
 
-      Serial.println("... Connection to ThingSpeak failed ("+String(failedCounter, DEC)+")");
+      Serial.println("... Unable to POST ("+String(failedCounter, DEC)+")");
       Serial.println();
     }
   }
